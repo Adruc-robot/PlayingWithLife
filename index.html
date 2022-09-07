@@ -1,0 +1,94 @@
+<!doctype html>
+<html class="no-js" lang="">
+
+<head>
+  <meta charset="utf-8">
+  <title>Life?</title>
+</head>
+
+<body>
+  <canvas id="life" width="1000" height="1000"></canvas>
+  <script>
+    const particleSize = 5
+    m = document.getElementById('life').getContext('2d')
+    draw = (x, y, c, s) => {
+      m.fillStyle = c
+      m.fillRect(x, y, s, s)
+    }
+    particles=[]
+    particle = (x, y, c) => {
+      return {'x':x, 'y':y, 'vx':0, 'vy':0, 'color':c}
+    }
+    random = () => {
+      return Math.random()*400+50
+    }
+    create = (number, color) => {
+      group = []
+      for (let i = 0; i < number; i++) {
+        group.push(particle(random(), random(), color))
+        particles.push(group[i])
+      }
+      return group
+    }
+    rule = (particles1, particles2, g) => {
+      for (let i = 0; i < particles1.length; i++) {
+        fx = 0
+        fy = 0
+        for (let j = 0; j < particles2.length; j++) {
+          a = particles1[i]
+          b = particles2[j]
+          dx = a.x - b.x
+          dy = a.y - b.y
+          d = Math.sqrt(dx * dx + dy * dy)
+          //this bit defines the distance at which particles will interact
+          if (d > 0 && d < 15) {
+            F = g * 1/d
+            fx += (F * dx)
+            fy += (F * dy)
+          }
+          a.vx = (a.vx + fx) * .5
+          a.vy = (a.vy + fy) * .5
+          //if (a.x <= 0 || a.x >= 500) { 
+          if (a.x <= 50 || a.x > 450) { 
+            a.vx *= -1
+          }
+          a.x += a.vx
+          //if (a.y <= 0 || a.y >= 500) { 
+          if (a.y <= 50 || a.y > 450) { 
+            a.vy *= -1
+          }
+          a.y += a.vy
+        }
+
+      }
+    }
+    
+    update = () => {
+      //rule(red, green, -.5)
+      rule(green, red, -.5)
+      //rule(green, red, .1)
+      rule(green, green, .1)
+      rule(red, red, .1)
+      //rule(red, yellow, -0.01)
+      m.clearRect(0, 0, 1000, 1000)
+      draw(0, 0, "black", 1000)
+      for (let i = 0; i < particles.length; i++) {
+        //console.log(particles[i].color)
+        draw(particles[i].x, particles[i].y, particles[i].color, particleSize)
+      }
+      requestAnimationFrame(update)
+    }
+    //yellow = create(20,'yellow')
+    const green = create(500, 'green')
+    const red = create(500, 'red')
+    //const yellow = create(50, 'yellow')
+    //const blue = create(50,'blue')
+    update();
+    //console.log(yellow)
+    //console.log(m)
+  </script>
+  
+
+</body>
+
+</html>
